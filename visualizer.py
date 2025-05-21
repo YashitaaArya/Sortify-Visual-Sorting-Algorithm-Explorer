@@ -1,28 +1,23 @@
-from tkinter import Canvas
+# visualizer.py
 
-canvas_width = 800
-canvas_height = 400
-
-def draw_data(canvas: Canvas, data, color_array):
+def draw_data(canvas, data, color_array):
     canvas.delete("all")
-    n = len(data)
-    if n == 0:
-        return
-
-    bar_width = max(15, canvas_width // n)
-    spacing = 2
+    canvas_width = int(canvas['width'])
+    canvas_height = int(canvas['height'])
+    
+    bar_width = max(15, canvas_width // len(data))
+    spacing = 4
+    offset = 30
 
     for i, val in enumerate(data):
-        x0 = i * (bar_width + spacing)
+        x0 = i * (bar_width + spacing) + spacing
         y0 = canvas_height - val
         x1 = x0 + bar_width
         y1 = canvas_height
 
-        # Draw bar
-        canvas.create_rectangle(x0, y0, x1, y1, fill=color_array[i])
-
-        # Draw centered value
-        text_x = (x0 + x1) / 2
-        canvas.create_text(text_x, y0 - 10, text=str(val), anchor='s', font=("Helvetica", 10, "bold"))
+        canvas.create_rectangle(x0, y0, x1, y1, fill=color_array[i], outline="")
+        canvas.create_text((x0 + x1) / 2, y0 - 12, text=str(val),
+                           fill="black", font=("Helvetica", 10, "bold"),
+                           anchor='s', justify='center')
 
     canvas.update_idletasks()
