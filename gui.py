@@ -1,36 +1,77 @@
+# gui.py
 import tkinter as tk
 from tkinter import ttk
-from controller import generate_data, on_sort_click
 
-def run_app():
-    root = tk.Tk()
-    root.title("Sortify - Sorting Visualizer")
-    root.maxsize(900, 600)
-    root.config(bg="white")
+def create_gui(root, on_algorithm_select, on_speed_select, on_generate_click, on_sort_click):
+    root.title("Sortify - Sorting Algorithm Visualizer")
+    root.maxsize(1000, 700)
+    root.config(bg="#2c3e50")
 
-    # Variables
-    selected_algo = tk.StringVar(value="Bubble Sort")
-    speed = tk.StringVar(value="Medium")
+    heading = tk.Label(
+        root, text="SORTIFY", font=("Helvetica", 28, "bold"),
+        bg="#2c3e50", fg="white", pady=10
+    )
+    heading.pack()
 
-    # UI Frame
-    ui_frame = tk.Frame(root, width=900, height=200, bg="white")
-    ui_frame.grid(row=0, column=0, padx=10, pady=5)
+    container = tk.Frame(root, bg="#34495e", padx=20, pady=20)
+    container.pack(pady=20)
 
-    # Dropdown for Algorithm
-    tk.Label(ui_frame, text="Algorithm:", bg="white").grid(row=0, column=0, padx=5, pady=5)
-    algo_menu = ttk.Combobox(ui_frame, textvariable=selected_algo, values=["Bubble Sort", "Selection Sort", "Insertion Sort"], state="readonly", width=15)
-    algo_menu.grid(row=0, column=1, padx=5, pady=5)
+    # Step 1: Algorithm selection
+    algo_frame = tk.Frame(container, bg="#34495e")
+    algo_frame.pack()
+    algo_label = tk.Label(algo_frame, text="Choose Sorting Algorithm:", font=("Helvetica", 14), bg="#34495e", fg="white")
+    algo_label.pack(side=tk.LEFT, padx=(0, 10))
+    algo_menu = ttk.Combobox(algo_frame, values=["Bubble Sort", "Selection Sort", "Insertion Sort"], state="readonly")
+    algo_menu.pack(side=tk.LEFT)
+    algo_menu.bind("<<ComboboxSelected>>", lambda e: on_algorithm_select())
 
-    # Speed selection
-    tk.Label(ui_frame, text="Speed:", bg="white").grid(row=0, column=2, padx=5, pady=5)
-    speed_menu = ttk.Combobox(ui_frame, textvariable=speed, values=["Fast", "Medium", "Slow"], state="readonly", width=10)
-    speed_menu.grid(row=0, column=3, padx=5, pady=5)
+    # Step 2: Speed selection (initially hidden)
+    speed_frame = tk.Frame(container, bg="#34495e")
+    speed_label = tk.Label(speed_frame, text="Choose Speed:", font=("Helvetica", 14), bg="#34495e", fg="white")
+    speed_label.pack(side=tk.LEFT, padx=(0, 10))
+    speed_menu = ttk.Combobox(speed_frame, values=["Fast", "Medium", "Slow"], state="readonly")
+    speed_menu.pack(side=tk.LEFT)
+    speed_menu.bind("<<ComboboxSelected>>", lambda e: on_speed_select())
 
-    # Buttons
+    # Step 3: Generate button (shown after speed selection)
+    generate_btn = tk.Button(
+        container, text="Generate Data", font=("Helvetica", 12, "bold"),
+        bg="#1abc9c", fg="white", padx=10, pady=5,
+        command=lambda: on_generate_click()
+    )
+
+    # Step 4: Sort button (enabled only after generate)
+    sort_btn = tk.Button(
+        container, text="SORTIFY", font=("Helvetica", 12, "bold"),
+        bg="#e67e22", fg="white", padx=10, pady=5,
+        command=lambda: on_sort_click()
+    )
+    sort_btn.config(state=tk.DISABLED)
+
     canvas = tk.Canvas(root, width=800, height=400, bg="white")
-    canvas.grid(row=1, column=0, padx=10, pady=5)
+    canvas.pack(pady=20)
+    canvas.pack_forget()  # Initially hidden
 
-    tk.Button(ui_frame, text="Generate", command=lambda: generate_data(canvas), bg="#28a745", fg="white", padx=10).grid(row=0, column=4, padx=5, pady=5)
-    tk.Button(ui_frame, text="Start Sorting", command=lambda: on_sort_click(canvas, selected_algo.get(), speed.get()), bg="#007bff", fg="white", padx=10).grid(row=0, column=5, padx=5, pady=5)
+    # Provide access for controller to show/hide
+    def show_speed():
+        speed_frame.pack(pady=10)
 
-    root.mainloop()
+    def show_generate():
+        generate_btn.pack(pady=10)
+
+    def show_canvas():
+        canvas.pack()
+
+    def enable_sort():
+        sort_btn.config(state=tk.NORMAL)
+        sort_btn.pack(pady=10)
+
+    return {
+        "algo_menu": algo_menu,
+        "speed_menu": speed_menu,
+        "show_speed": show_speed,
+        "show_generate": show_generate,
+        "show_canvas": show_canvas,
+        "enable_sort": enable_sort,
+        "canvas": canvas,
+    }
