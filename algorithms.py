@@ -1,39 +1,67 @@
-def bubble_sort(data, draw_func, delay_func):
-    n = len(data)
-    for i in range(n):
-        flag = 0
-        for j in range(n - i - 1):
-            if data[j] > data[j + 1]:
-                data[j], data[j + 1] = data[j + 1], data[j]
-                flag = 1
-            draw_func(data, ["green" if x == j or x == j+1 else "blue" for x in range(n)])
-            delay_func()
-        if flag == 0:
-            break
+# algorithms.py
 
-def selection_sort(data, draw_func, delay_func):
+def bubble_sort(data, draw_callback, speed_ms, root):
     n = len(data)
-    for i in range(n):
-        min_idx = i
-        for j in range(i+1, n):
-            if data[j] < data[min_idx]:
-                min_idx = j
-            draw_func(data, ["yellow" if x == j or x == min_idx else "blue" for x in range(n)])
-            delay_func()
-        data[i], data[min_idx] = data[min_idx], data[i]
-        draw_func(data, ["green" if x == i or x == min_idx else "blue" for x in range(n)])
-        delay_func()
+    
+    def sort_step(i, j):
+        if i < n:
+            if j < n - i - 1:
+                if data[j] > data[j + 1]:
+                    data[j], data[j + 1] = data[j + 1], data[j]
+                colors = ['#e74c3c' if x == j or x == j + 1 else '#3498db' for x in range(n)]
+                draw_callback(data, colors)
+                root.after(speed_ms, sort_step, i, j + 1)
+            else:
+                root.after(speed_ms, sort_step, i + 1, 0)
+        else:
+            draw_callback(data, ['#2ecc71'] * n)  # Sorted color
+    
+    sort_step(0, 0)
 
-def insertion_sort(data, draw_func, delay_func):
+def selection_sort(data, draw_callback, speed_ms, root):
     n = len(data)
-    for i in range(1, n):
-        key = data[i]
-        j = i - 1
-        while j >= 0 and data[j] > key:
-            data[j + 1] = data[j]
-            j -= 1
-            draw_func(data, ["red" if x == j or x == i else "blue" for x in range(n)])
-            delay_func()
-        data[j + 1] = key
-        draw_func(data, ["green" if x == j + 1 or x == i else "blue" for x in range(n)])
-        delay_func()
+    
+    def sort_step(i, j, min_index):
+        if i < n - 1:
+            if j < n:
+                if data[j] < data[min_index]:
+                    min_index = j
+                colors = ['#e74c3c' if x == min_index or x == j else '#3498db' for x in range(n)]
+                draw_callback(data, colors)
+                root.after(speed_ms, sort_step, i, j + 1, min_index)
+            else:
+                data[i], data[min_index] = data[min_index], data[i]
+                root.after(speed_ms, sort_step, i + 1, i + 2, i + 1)
+        else:
+            draw_callback(data, ['#2ecc71'] * n)  # Sorted color
+    
+    sort_step(0, 1, 0)
+
+def insertion_sort(data, draw_callback, speed_ms, root):
+    n = len(data)
+    
+    def sort_step(i, j, key):
+        if i < n:
+            if j >= 0 and data[j] > key:
+                data[j + 1] = data[j]
+                colors = ['#e74c3c' if x == j or x == j + 1 else '#3498db' for x in range(n)]
+                draw_callback(data, colors)
+                root.after(speed_ms, sort_step, i, j - 1, key)
+            else:
+                data[j + 1] = key
+                i += 1
+                if i < n:
+                    key = data[i]
+                    j = i - 1
+                    colors = ['#e74c3c' if x == i else '#3498db' for x in range(n)]
+                    draw_callback(data, colors)
+                    root.after(speed_ms, sort_step, i, j, key)
+                else:
+                    draw_callback(data, ['#2ecc71'] * n)
+        else:
+            draw_callback(data, ['#2ecc71'] * n)
+    
+    if n > 0:
+        sort_step(1, 0, data[1])
+    else:
+        draw_callback(data, ['#2ecc71'] * n)
