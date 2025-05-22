@@ -34,21 +34,11 @@ Sortify/
 └── README.md            # Project documentation
 ```
 
-### 🖥️ CLI Version (C++)
+### CLI Version (C++)
 - Binary Search to locate elements
 - Delete element if found (maintains sorted order)
 - Insert element if not found (inserts at correct sorted position)
 - User-driven input and loop to perform multiple operations
-
-### 🎛️ GUI Version (Python + Tkinter)
-- Clean and modern graphical interface
-- Space-separated array input
-- Buttons for:
-  - 🔍 Search
-  - ➕ Insert
-  - ➖ Delete
-- Automatically keeps the array sorted
-- Real-time array display with color-coded feedback
 
 ## How to Run
 
