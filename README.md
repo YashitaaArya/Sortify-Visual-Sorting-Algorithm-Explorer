@@ -52,7 +52,7 @@ Each step of the algorithm is animated in real-time, allowing users to observe h
 2. **Run the application:**
    
    ```bash
-   python main.cpp
+   python main.py
    ```
    
 ## License
